@@ -1,0 +1,578 @@
+Q1) Consider the following database
+Doctor (dno, dname, city)
+Patient (pno, pat_name, city, disease)
+The relationship is as follows: Doctor-Patient: many-to-many with Fee as a descriptive attribute.
+Normalize the above relation schema in 3NF and insert minimum 5 records in each table.
+
+Given Relation Schema
+We are provided with two entities: Doctor and Patient, having a many-to-many relationship, with Fee as the descriptive attribute. The schema details are as follows:
+Doctor: (dno, dname, city)
+Patient: (pno, pat_name, city, disease)
+Many-to-many relationship with a descriptive attribute Fee.
+
+Normalization to 3NF
+To normalize this schema to 3NF, we will create a separate Doctor-Patient relationship table for the many-to-many relationship with the Fee attribute. The tables in 3NF will be as follows:
+Doctor Table
+Attributes: dno (PK), dname, city
+Patient Table
+Attributes: pno (PK), pat_name, city, disease
+Doctor_Patient Table
+Attributes: dno (FK), pno (FK), Fee
+Composite Primary Key: (dno, pno)
+
+Tables After Normalization:
+Doctor (dno, dname, city)
+Patient (pno, pat_name, city, disease)
+Doctor_Patient (dno, pno, Fee)
+Explanation
+The Doctor and Patient tables store individual entity information.
+The Doctor_Patient table handles the many-to-many relationship between doctors and patients, with Fee as a descriptive attribute.
+This structure is now in Third Normal Form (3NF):
+All non-key attributes in the Doctor and Patient tables depend solely on their respective primary keys.
+The composite table Doctor_Patient ensures that there are no transitive dependencies.
+
+
+
+
+Q.2) Execute the following queries in PostGreSQL [any 4]
+i. List the details of all the doctors from city.
+ii. Display count of patients.
+iii. List the names of the patients suffering from 'cancer' disease.
+iv. Change the city of 'Dr. Patil' to Pune.
+v. List the names of patients that starts with alphabet 'A'
+
+Step 1: Create the Tables
+sql
+Copy code
+-- Create Doctor Table
+CREATE TABLE Doctor (
+    dno SERIAL PRIMARY KEY,
+    dname VARCHAR(100) NOT NULL,
+    city VARCHAR(100) NOT NULL
+);
+
+-- Create Patient Table
+CREATE TABLE Patient (
+    pno SERIAL PRIMARY KEY,
+    pat_name VARCHAR(100) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    disease VARCHAR(100) NOT NULL
+);
+
+-- Create Doctor_Patient Table (Many-to-Many with Fee)
+CREATE TABLE Doctor_Patient (
+    dno INT REFERENCES Doctor(dno),
+    pno INT REFERENCES Patient(pno),
+    Fee DECIMAL(10, 2),
+    PRIMARY KEY (dno, pno)
+);
+
+-- Insert sample data into Doctor table
+INSERT INTO Doctor (dname, city)
+VALUES
+    ('Dr. Smith', 'New York'),
+    ('Dr. Johnson', 'Los Angeles'),
+    ('Dr. Lee', 'Chicago'),
+    ('Dr. Brown', 'Houston'),
+    ('Dr. Patil', 'Mumbai');  -- For Update Query
+
+-- Insert sample data into Patient table
+INSERT INTO Patient (pat_name, city, disease)
+VALUES
+    ('John Doe', 'New York', 'Flu'),
+    ('Jane Roe', 'Los Angeles', 'Diabetes'),
+    ('Mark Twain', 'Chicago', 'Hypertension'),
+    ('Lucy Hale', 'Houston', 'Asthma'),
+    ('Alice Smith', 'Miami', 'Cancer'), -- For Query iii
+    ('Alan Walker', 'San Diego', 'Cancer'), -- For Query v
+    ('Aiden Murphy', 'Miami', 'Heart Disease'); -- For Query v
+
+-- Insert sample data into Doctor_Patient table
+INSERT INTO Doctor_Patient (dno, pno, Fee)
+VALUES
+    (1, 1, 200),
+    (2, 2, 300),
+    (3, 3, 150),
+    (4, 4, 180),
+    (5, 5, 250);
+
+Step 2: Queries in PostgreSQL
+i. List the details of all doctors from a specific city (e.g., New York)
+sql
+Copy code
+SELECT * 
+FROM Doctor
+WHERE city = 'New York';
+This will retrieve all the doctors whose city is New York.
+ii. Display the count of patients
+sql
+Copy code
+SELECT COUNT(*) AS total_patients
+FROM Patient;
+This will return the total number of patients in the Patient table.
+iii. List the names of patients suffering from 'Cancer' disease
+sql
+Copy code
+SELECT pat_name
+FROM Patient
+WHERE disease = 'Cancer';
+This will retrieve the names of patients who are suffering from Cancer.
+iv. Change the city of 'Dr. Patil' to 'Pune'
+sql
+Copy code
+UPDATE Doctor
+SET city = 'Pune'
+WHERE dname = 'Dr. Patil';
+This query will update the city of Dr. Patil to Pune.
+v. List the names of patients whose names start with the alphabet 'A'
+sql
+Copy code
+SELECT pat_name
+FROM Patient
+WHERE pat_name LIKE 'A%';
+This will return the names of patients whose names start with the letter 'A' (e.g., Alice Smith, Alan Walker, Aiden Murphy).
+
+Output Example:
+For the given queries:
+Query (i) would list all doctors from New York.
+Query (ii) would return a count of patients.
+Query (iii) would list patients suffering from cancer.
+Query (iv) would change the city of Dr. Patil to Pune.
+Query (v) would list patients whose names start with 'A'.
+
+Q.1) Consider the following database.
+Student-Teacher database Student (sno, s_name, s_class) s_class can be either "FY", "SY" or "TY" Teacher (tno, t_name, yrs_experience)
+The relationship is as follows: Student-Teacher: M-M with descriptive attribute Subject.
+Normalize the above relation schema in 3NF and insert minimum 5 records in each table
+
+Given Database Schema:
+We have two entities: Student and Teacher, with a many-to-many relationship. The descriptive attribute is Subject. The schema details are:
+Student: (sno, s_name, s_class)
+Teacher: (tno, t_name, yrs_experience)
+Many-to-many relationship with a descriptive attribute Subject.
+
+Normalization to 3NF:
+To achieve Third Normal Form (3NF), we need to break the many-to-many relationship into three separate tables: Student, Teacher, and a relationship table with Subject as the descriptive attribute.
+After normalization, the schema will be as follows:
+Student Table
+Attributes: sno (PK), s_name, s_class
+Teacher Table
+Attributes: tno (PK), t_name, yrs_experience
+Student_Teacher Table
+Attributes: sno (FK), tno (FK), Subject
+Composite Primary Key: (sno, tno)
+
+Tables After Normalization:
+Student (sno, s_name, s_class)
+Teacher (tno, t_name, yrs_experience)
+Student_Teacher (sno, tno, Subject)
+Explanation
+Student table holds unique student information, with each student having a sno (Primary Key).
+Teacher table holds unique teacher information, with each teacher having a tno (Primary Key).
+Student_Teacher table manages the many-to-many relationship between students and teachers, with Subject as a descriptive attribute. The composite primary key (sno, tno) ensures no duplication in the relationships between the same student and teacher.
+This schema is in 3NF because:
+All non-key attributes depend only on the primary key (no partial dependencies).
+There are no transitive dependencies between attributes.
+
+
+Q.2) Execute the following queries in PostGreSQL [any 4]
+i. List teachers having > 5 yrs of experience.
+ii. List all students studying in "FY.
+iii. Count the number of teachers who teach subject
+iv. Delete record of student whose sno"
+v. Add designation column in teacher table.
+
+Step 1: Create the Tables
+sql
+Copy code
+-- Create Student Table
+CREATE TABLE Student (
+    sno SERIAL PRIMARY KEY,
+    s_name VARCHAR(100) NOT NULL,
+    s_class VARCHAR(10) CHECK (s_class IN ('FY', 'SY', 'TY'))
+);
+
+-- Create Teacher Table
+CREATE TABLE Teacher (
+    tno SERIAL PRIMARY KEY,
+    t_name VARCHAR(100) NOT NULL,
+    yrs_experience INT
+);
+
+-- Create Student_Teacher Table (Many-to-Many with Subject)
+CREATE TABLE Student_Teacher (
+    sno INT REFERENCES Student(sno),
+    tno INT REFERENCES Teacher(tno),
+    Subject VARCHAR(100),
+    PRIMARY KEY (sno, tno)
+);
+
+-- Insert sample data into Student table
+INSERT INTO Student (s_name, s_class)
+VALUES
+    ('Alice White', 'FY'),
+    ('Bob Green', 'SY'),
+    ('Charlie Blue', 'TY'),
+    ('Daisy Brown', 'FY'),
+    ('Ethan Black', 'SY');
+
+-- Insert sample data into Teacher table
+INSERT INTO Teacher (t_name, yrs_experience)
+VALUES
+    ('Mr. Roberts', 10),
+    ('Ms. Smith', 8),
+    ('Dr. Johnson', 15),
+    ('Prof. Lee', 12),
+    ('Mrs. Taylor', 9);
+
+-- Insert sample data into Student_Teacher table
+INSERT INTO Student_Teacher (sno, tno, Subject)
+VALUES
+    (1, 1, 'Mathematics'),
+    (2, 2, 'Physics'),
+    (3, 3, 'Chemistry'),
+    (4, 4, 'English'),
+    (5, 5, 'History'),
+    (1, 2, 'Physics'),
+    (2, 3, 'Chemistry'),
+    (3, 4, 'English');
+
+Step 2: Queries in PostgreSQL
+i. List teachers having more than 5 years of experience
+sql
+Copy code
+SELECT t_name, yrs_experience
+FROM Teacher
+WHERE yrs_experience > 5;
+This will return a list of teachers who have more than 5 years of experience.
+
+ii. List all students studying in "FY"
+sql
+Copy code
+SELECT s_name, s_class
+FROM Student
+WHERE s_class = 'FY';
+This will return the names of students who are in the FY class.
+
+iii. Count the number of teachers who teach a subject
+sql
+Copy code
+SELECT COUNT(DISTINCT tno) AS teacher_count
+FROM Student_Teacher
+WHERE Subject IS NOT NULL;
+This query counts the number of distinct teachers who are teaching any subject.
+
+iv. Delete the record of a student whose sno = 3
+sql
+Copy code
+DELETE FROM Student
+WHERE sno = 3;
+This query deletes the record of the student whose sno is 3 (e.g., Charlie Blue in this case).
+
+v. Add a "designation" column to the Teacher table
+sql
+Copy code
+ALTER TABLE Teacher
+ADD COLUMN designation VARCHAR(100);
+
+-- Optionally, update the designation values for existing teachers
+UPDATE Teacher
+SET designation = 'Professor'
+WHERE yrs_experience > 10;
+
+UPDATE Teacher
+SET designation = 'Assistant Professor'
+WHERE yrs_experience <= 10;
+This query adds a new column called designation to the Teacher table and assigns values based on their years of experience.
+
+Output Example
+For the given queries:
+Query (i) lists teachers with more than 5 years of experience.
+Query (ii) returns students who are in the FY class.
+Query (iii) counts how many teachers are teaching any subject.
+Query (iv) deletes the student record with sno = 3.
+Query (v) adds a new column designation and populates it based on years of experience.
+
+Q.1)Consider the following database (primary keys are underlined).
+Person (pnumber, pname, birthdate, income),
+Area(aname,area_type).
+There exists a one-to-many relationship between Area and Person.
+The attribute 'area_type' can have values as either urban or rural.
+Normalize the above relation schema in 3NF and insert minimum 5 records in each table
+
+Given Database Schema
+Person: (pnumber, pname, birthdate, income)
+Area: (aname, area_type)
+Relationship
+There exists a one-to-many relationship between Area and Person, meaning that each area can have multiple people associated with it, but each person belongs to only one area.
+Normalization to 3NF
+In 3NF, we need to ensure that:
+The table is in Second Normal Form (2NF).
+There are no transitive dependencies; that is, all attributes are fully functional and depend only on the primary key.
+Tables After Normalization:
+Area Table
+Attributes: aname (PK), area_type
+Person Table
+Attributes: pnumber (PK), pname, birthdate, income, aname (FK)
+Explanation of the SQL Code
+Create Tables:
+The Area table has aname as its primary key and includes a CHECK constraint on area_type to ensure it can only be 'urban' or 'rural'.
+The Person table has a primary key pnumber, and aname acts as a foreign key referencing the Area table.
+Insert Records:
+Sample data is inserted into both the Area and Person tables, representing different areas and people living in those areas.
+Summary
+After normalization:
+The Area table is normalized and contains area information.
+The Person table stores individual records and references the area they belong to, maintaining the one-to-many relationship.
+
+
+Q.2) Execute the following queries in PostGreSQL [any 4]
+i. List the details of persons having income > 10000.
+ii. Transfer all people living in 'Pune' to 'Delhi'.
+iii. Count number of area's having type 'urban'.
+iv. Give the count of people who are born on
+v. List the names of all people living in area.
+
+Step 1: Create the Tables and Insert Sample Data
+sql
+Copy code
+-- Create Area Table
+CREATE TABLE Area (
+    aname VARCHAR(100) PRIMARY KEY,
+    area_type VARCHAR(10) CHECK (area_type IN ('urban', 'rural'))
+);
+
+-- Create Person Table
+CREATE TABLE Person (
+    pnumber SERIAL PRIMARY KEY,
+    pname VARCHAR(100) NOT NULL,
+    birthdate DATE NOT NULL,
+    income DECIMAL(10, 2),
+    aname VARCHAR(100) REFERENCES Area(aname)
+);
+
+-- Insert sample data into Area table
+INSERT INTO Area (aname, area_type) VALUES
+    ('Downtown', 'urban'),
+    ('Countryside', 'rural'),
+    ('Uptown', 'urban'),
+    ('Village', 'rural'),
+    ('Suburb', 'urban'),
+    ('Pune', 'urban'),
+    ('Delhi', 'urban');
+
+-- Insert sample data into Person table
+INSERT INTO Person (pname, birthdate, income, aname) VALUES
+    ('Alice Johnson', '1990-05-14', 55000.00, 'Downtown'),
+    ('Bob Smith', '1985-07-22', 48000.00, 'Countryside'),
+    ('Charlie Brown', '2000-03-01', 32000.00, 'Uptown'),
+    ('Daisy Clark', '1995-12-31', 72000.00, 'Village'),
+    ('Ethan Hunt', '1993-11-18', 65000.00, 'Suburb'),
+    ('Fiona Green', '1992-01-10', 12000.00, 'Pune'),
+    ('George White', '1988-03-15', 15000.00, 'Delhi');
+
+Step 2: Queries in PostgreSQL
+i. List the details of persons having income > 10000
+sql
+Copy code
+SELECT *
+FROM Person
+WHERE income > 10000;
+This query retrieves all details of persons with an income greater than 10,000.
+
+ii. Transfer all people living in 'Pune' to 'Delhi'
+sql
+Copy code
+UPDATE Person
+SET aname = 'Delhi'
+WHERE aname = 'Pune';
+This query updates the aname field for all persons currently living in Pune, changing it to Delhi.
+
+iii. Count the number of areas having type 'urban'
+sql
+Copy code
+SELECT COUNT(*) AS urban_area_count
+FROM Area
+WHERE area_type = 'urban';
+This query counts the number of areas classified as urban.
+
+iv. Count of people who are born on a specific date (e.g., '1990-05-14')
+sql
+Copy code
+SELECT COUNT(*) AS count_of_people
+FROM Person
+WHERE birthdate = '1990-05-14';
+This query counts the number of people born on May 14, 1990. You can replace this date with any specific date you want to check.
+
+v. List the names of all people living in a specific area (e.g., 'Delhi')
+sql
+Copy code
+SELECT pname
+FROM Person
+WHERE aname = 'Delhi';
+This query retrieves the names of all persons living in Delhi.
+
+Summary
+The full SQL code includes the creation of tables, sample data insertion, and the execution of the specified queries.
+You can run this code in a PostgreSQL environment to create the database schema and execute the queries. Adjust the specific dates or area names in the queries as needed for your requirements.
+
+Q.1) Consider the following database
+Student (sno, s name, s class) s_class can be either "FY", "SY" or "TY"
+Teacher (tno, t name, yrs_experience)
+The relationship is as follows: Student-Teacher: M-M with descriptive attribute Subject.
+Normalize the above relation schema in 3NF and insert minimum 5 records in each table
+
+Given Database Schema
+Student: (sno, s_name, s_class)
+Teacher: (tno, t_name, yrs_experience)
+There is a many-to-many relationship between Student and Teacher with a descriptive attribute Subject.
+Step 1: Normalize to 3NF
+To achieve 3NF, we need to ensure that:
+The table is in Second Normal Form (2NF).
+There are no transitive dependencies.
+Tables After Normalization
+Student Table
+Attributes: sno (PK), s_name, s_class
+Teacher Table
+Attributes: tno (PK), t_name, yrs_experience
+Student_Teacher Table
+Attributes: sno (FK), tno (FK), Subject
+Composite Primary Key: (sno, tno)
+Explanation of the SQL Code
+Create Tables:
+The Student table includes a primary key (sno) and a CHECK constraint on s_class to ensure values can only be FY, SY, or TY.
+The Teacher table includes a primary key (tno).
+The Student_Teacher table manages the many-to-many relationship and includes a composite primary key made up of sno and tno.
+Insert Records:
+Sample data is inserted into the Student, Teacher, and Student_Teacher tables.
+Summary
+The Student table contains student information.
+The Teacher table contains teacher information.
+The Student_Teacher table represents the many-to-many relationship between students and teachers, with Subject as a descriptive attribute.
+
+
+Q.2)Execute the following queries in PostGreSQL [any 4]
+i. Give class-wise number of students.
+ii. List all students studying in class "TY".
+iii. Count the number of students who have taken subject "
+iv. Delete record of student whose sno
+v. Add designation column in teacher table.
+
+Step 1: Create Tables and Insert Sample Data
+sql
+Copy code
+-- Create Student Table
+CREATE TABLE Student (
+    sno SERIAL PRIMARY KEY,
+    s_name VARCHAR(100) NOT NULL,
+    s_class VARCHAR(10) CHECK (s_class IN ('FY', 'SY', 'TY'))
+);
+
+-- Create Teacher Table
+CREATE TABLE Teacher (
+    tno SERIAL PRIMARY KEY,
+    t_name VARCHAR(100) NOT NULL,
+    yrs_experience INT
+);
+
+-- Create Student_Teacher Table (Many-to-Many with Subject)
+CREATE TABLE Student_Teacher (
+    sno INT REFERENCES Student(sno),
+    tno INT REFERENCES Teacher(tno),
+    Subject VARCHAR(100),
+    PRIMARY KEY (sno, tno)
+);
+
+-- Insert sample data into Student table
+INSERT INTO Student (s_name, s_class)
+VALUES
+    ('Alice Johnson', 'FY'),
+    ('Bob Smith', 'SY'),
+    ('Charlie Brown', 'TY'),
+    ('Daisy Clark', 'FY'),
+    ('Ethan Hunt', 'SY');
+
+-- Insert sample data into Teacher table
+INSERT INTO Teacher (t_name, yrs_experience)
+VALUES
+    ('Mr. Roberts', 10),
+    ('Ms. Smith', 8),
+    ('Dr. Johnson', 15),
+    ('Prof. Lee', 12),
+    ('Mrs. Taylor', 9);
+
+-- Insert sample data into Student_Teacher table
+INSERT INTO Student_Teacher (sno, tno, Subject)
+VALUES
+    (1, 1, 'Mathematics'),
+    (2, 2, 'Physics'),
+    (3, 3, 'Chemistry'),
+    (4, 4, 'English'),
+    (5, 5, 'History'),
+    (1, 2, 'Physics'),
+    (2, 3, 'Chemistry'),
+    (3, 4, 'English'),
+    (4, 5, 'Mathematics');
+Step 2: Queries in PostgreSQL
+i. Give class-wise number of students
+sql
+Copy code
+SELECT s_class, COUNT(*) AS number_of_students
+FROM Student
+GROUP BY s_class;
+This query counts the number of students in each class (FY, SY, TY) and groups the results by class.
+
+ii. List all students studying in class "TY"
+sql
+Copy code
+SELECT *
+FROM Student
+WHERE s_class = 'TY';
+This query retrieves all details of students who are in the TY class.
+
+iii. Count the number of students who have taken a specific subject (e.g., 'Physics')
+sql
+Copy code
+SELECT COUNT(DISTINCT sno) AS number_of_students
+FROM Student_Teacher
+WHERE Subject = 'Physics';
+This query counts the number of distinct students who have taken the subject Physics. You can replace 'Physics' with any other subject as needed.
+
+iv. Delete record of a student whose sno = 3
+sql
+Copy code
+DELETE FROM Student
+WHERE sno = 3;
+This query deletes the record of the student whose sno is 3 (e.g., Charlie Brown in this case).
+
+v. Add a "designation" column to the Teacher table
+sql
+Copy code
+ALTER TABLE Teacher
+ADD COLUMN designation VARCHAR(100);
+
+-- Optionally, you can update the designation values for existing teachers
+UPDATE Teacher
+SET designation = 'Professor'
+WHERE yrs_experience > 10;
+
+UPDATE Teacher
+SET designation = 'Assistant Professor'
+WHERE yrs_experience <= 10;
+This query adds a new column called designation to the Teacher table and assigns values based on their years of experience.
+
+Summary
+The full SQL code includes the creation of tables, sample data insertion, and the execution of the specified queries.
+You can run this code in a PostgreSQL environment to create the database schema and execute the queries as specified. Adjust the subject or student sno in the queries as needed for your requirements.
+Q.1) Consider the following database
+Employee(eno,ename, designation,salary)
+Department(dno,dname, location)
+The relationship is as follows: Employee-Department: many-to-one.
+Normalize the above relation schema in 3NF and insert minimum 5 records in each table.
+
+Given Database Schema
+Employee: (eno, ename, designation, salary)
+Department: (dno, dname, location)
+There is a many-to-one relationship from Employee to Department. This means that multiple employees can belong to a single department, but each employee belongs to only one department.
+Step 1: Normalize to 3NF
+To achieve 3NF, w
